@@ -1,0 +1,44 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: lab7-rabbitmq
+    ports:
+      - "5672:5672"     # AMQP порт
+      - "15672:15672"   # Management Web UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - lab7-net
+
+  mongodb:
+    image: mongo:7.0
+    container_name: lab7-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - lab7-net
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: lab7-redis
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--slowlog-log-slower-than", "100", "--slowlog-max-len", "128"]
+    volumes:
+      - redis_data:/data
+    networks:
+      - lab7-net
+
+volumes:
+  rabbitmq_data:
+  mongo_data:
+  redis_data:
+
+networks:
+  lab7-net:
+    driver: bridge
